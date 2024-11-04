@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nombreUsuarioOCorreoLayout"
+        android:id="@+id/emailLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -40,10 +40,10 @@
         app:layout_constraintWidth_percent="0.8">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/nombreUsuarioOCorreo"
+            android:id="@+id/emailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/nombre_de_usuario_o_correo"
+            android:hint="@string/email"
             android:inputType="textPersonName"
             android:padding="15dp"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -56,7 +56,7 @@
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nombreUsuarioOCorreoLayout"
+        app:layout_constraintTop_toBottomOf="@id/emailLayout"
         app:layout_constraintWidth_percent="0.8">
 
         <com.google.android.material.textfield.TextInputEditText

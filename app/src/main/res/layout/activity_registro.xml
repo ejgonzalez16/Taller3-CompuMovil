@@ -151,21 +151,55 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/numero_identificacion"
-                    android:inputType="textPassword"
+                    android:inputType="number"
                     android:padding="15dp"/>
+
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/seleccionarImagenBtn"
+
+            <ImageView
+                android:id="@+id/imagenContacto"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/seleccionarImagenBtn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/numeroIdentificacion" />
+
+
+            <LinearLayout
+                android:id="@+id/seleccionarImagenLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/seleccionar_imagen_contacto"
-                android:textColor="@color/tertiaryColor"
-                app:layout_constraintTop_toBottomOf="@id/numeroIdentificacion"
+                app:layout_constraintTop_toBottomOf="@id/imagenContacto"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="40dp"/>
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/seleccionarImagenBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/seleccionar_imagen"
+                    android:textColor="@color/tertiaryColor"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="40dp"/>
+
+                <Button
+                    android:id="@+id/tomarImagenBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/tomar_foto"
+                    android:textColor="@color/tertiaryColor"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="40dp"/>
+            </LinearLayout>
+
 
             <Button
                 android:id="@+id/registrarseBtn"
@@ -173,7 +207,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/registrarse"
                 android:textColor="@color/tertiaryColor"
-                app:layout_constraintTop_toBottomOf="@id/seleccionarImagenBtn"
+                app:layout_constraintTop_toBottomOf="@id/seleccionarImagenLayout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="15dp"
