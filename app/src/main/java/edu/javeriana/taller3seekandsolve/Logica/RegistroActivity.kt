@@ -28,28 +28,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.transition.Visibility
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_CAMERA
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_GALLERY
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
 import edu.javeriana.taller3seekandsolve.Datos.Usuario
 import edu.javeriana.taller3seekandsolve.databinding.ActivityRegistroBinding
-import org.osmdroid.config.Configuration
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -61,7 +48,6 @@ import java.util.Locale
 class RegistroActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistroBinding
     private lateinit var photoUri: Uri
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var storage: FirebaseStorage
     private val database = FirebaseDatabase.getInstance()
     private lateinit var myRef: DatabaseReference
