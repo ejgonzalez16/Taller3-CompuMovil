@@ -18,4 +18,6 @@
     <string name="seleccionar_imagen">Seleccionar imagen</string>
     <string name="tomar_foto">Tomar foto</string>
     <string name="registrarse">Registrarse</string>
+    <string name="logout">Log Out</string>
+    <string name="establecer_disponibilidad">Establecerse disponible</string>
 </resources>
