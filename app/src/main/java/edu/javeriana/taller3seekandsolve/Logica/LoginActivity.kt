@@ -1,21 +1,70 @@
 package edu.javeriana.taller3seekandsolve.Logica
 
+import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import edu.javeriana.taller3seekandsolve.R
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
+import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
+import edu.javeriana.taller3seekandsolve.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityLoginBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_login)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        auth = Firebase.auth
+        eventoRegistrate()
+        eventoLogin()
+    }
+
+    private fun eventoLogin(){
+        binding.iniciarSesionButton.setOnClickListener {
+            if(binding.emailEditText.text.toString().isEmpty() ||
+                binding.contrasenia.text.toString().isEmpty()){
+                Toast.makeText(this@LoginActivity, "Digite todos los campos", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            if(!validarCorreo(binding.emailEditText.text.toString())){
+                Toast.makeText(this@LoginActivity, "Digite un correo válido", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            iniciarSesion()
+        }
+    }
+
+    private fun iniciarSesion(){
+        auth.signInWithEmailAndPassword(binding.emailEditText.text.toString(),binding.contrasenia.text.toString())
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "signInWithEmail:success:")
+                    startActivity(Intent(this@LoginActivity, RegistroActivity::class.java))
+                } else {
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun validarCorreo(email: String): Boolean{
+
+        if(email.isEmpty() || !email.contains(".") || !email.contains("@") ||
+            email.indexOf("@") > email.indexOf(".") || email.count{ it == '@'} > 1){
+            return false
+        }
+        return true
+    }
+
+    private fun eventoRegistrate(){
+        binding.registrateButtonText.setOnClickListener {
+            startActivity(Intent(this@LoginActivity, RegistroActivity::class.java))
         }
     }
 }
