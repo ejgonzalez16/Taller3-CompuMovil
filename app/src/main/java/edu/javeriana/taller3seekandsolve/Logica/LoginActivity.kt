@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithEmail:success:")
-                    startActivity(Intent(this@LoginActivity, RegistroActivity::class.java))
+                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 } else {
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
                     Toast.makeText(this, "Authentication failed.",
@@ -53,13 +53,9 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun validarCorreo(email: String): Boolean{
-
-        if(email.isEmpty() || !email.contains(".") || !email.contains("@") ||
-            email.indexOf("@") > email.indexOf(".") || email.count{ it == '@'} > 1){
-            return false
-        }
-        return true
+    private fun validarCorreo(email: String): Boolean {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+        return email.isNotEmpty() && email.matches(emailRegex.toRegex())
     }
 
     private fun eventoRegistrate(){

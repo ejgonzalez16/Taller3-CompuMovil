@@ -230,13 +230,9 @@ class RegistroActivity : AppCompatActivity() {
         }
     }
 
-    private fun validarCorreo(email: String): Boolean{
-
-        if(email.isEmpty() || !email.contains(".") || !email.contains("@") ||
-            email.indexOf("@") > email.indexOf(".") || email.count{ it == '@'} > 1){
-            return false
-        }
-        return true
+    private fun validarCorreo(email: String): Boolean {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+        return email.isNotEmpty() && email.matches(emailRegex.toRegex())
     }
 
     private fun eventoImagenContacto() {
