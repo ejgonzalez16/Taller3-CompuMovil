@@ -18,4 +18,6 @@
     <string name="ya_tienes_una_cuenta">Ya tienes una cuenta?</string>
     <string name="seleccionar_imagen_contacto">Seleccionar imagen de Contacto</string>
     <string name="registrarse">Registrarse</string>
+    <string name="logout">Log Out</string>
+    <string name="establecer_disponibilidad">Establecerse disponible</string>
 </resources>
