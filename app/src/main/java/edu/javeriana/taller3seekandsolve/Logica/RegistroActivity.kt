@@ -9,10 +9,14 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.text.InputType
 import android.util.Log
@@ -24,18 +28,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.transition.Visibility
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_CAMERA
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_GALLERY
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS
@@ -53,10 +48,10 @@ import java.util.Locale
 class RegistroActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistroBinding
     private lateinit var photoUri: Uri
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var storage: FirebaseStorage
     private val database = FirebaseDatabase.getInstance()
     private lateinit var myRef: DatabaseReference
+    private lateinit var locationManager: LocationManager
 
     // El onRequestPermissionsResult se reemplaza por ActivityResultContracts.RequestMultiplePermissions
     // Porque se tienen que solicitar y aceptar varios permisos a la vez
@@ -77,8 +72,8 @@ class RegistroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistroBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         storage = FirebaseStorage.getInstance()
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         setupPasswordVisibility()
         eventoRegistrarse()
         eventoImagenContacto()
@@ -198,30 +193,40 @@ class RegistroActivity : AppCompatActivity() {
     }
 
     private fun escribirUsuarioBD(urlImagen: String){
-        // Verificar y solicitar permisos
-        var latitud = 0.0
-        var longitud = 0.0
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         } else {
-            fusedLocationClient.lastLocation.addOnSuccessListener(this, OnSuccessListener { location ->
-                if (location != null) {
-                    latitud = location.latitude
-                    longitud = location.longitude
-                    Toast.makeText(this, "Latitud: $latitud, Longitud: $longitud", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, object :
+                LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    val latitud = location.latitude
+                    val longitud = location.longitude
+                    val usuario = Usuario(
+                        binding.nombreEditText.text.toString(),
+                        binding.apellidoEditText.text.toString(),
+                        binding.emailEditText.text.toString(),
+                        binding.contrasenia.text.toString(),
+                        urlImagen,
+                        binding.numeroIdentificacionEditText.text.toString().toInt(),
+                        latitud,
+                        longitud
+                    )
+                    myRef = database.getReference(PATH_USERS + auth.currentUser!!.uid)
+                    myRef.setValue(usuario)
+                    locationManager.removeUpdates(this)
+                    Toast.makeText(
+                        this@RegistroActivity, "usuario creado con éxito!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
                 }
+
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                override fun onProviderEnabled(provider: String) {}
+                override fun onProviderDisabled(provider: String) {}
             })
         }
-        val usuario = Usuario(binding.nombreEditText.text.toString(),
-            binding.apellidoEditText.text.toString(), binding.emailEditText.text.toString(),
-            binding.contrasenia.text.toString(), urlImagen, binding.numeroIdentificacionEditText.text.toString().toInt(), latitud, longitud)
-        myRef = database.getReference(PATH_USERS+auth.currentUser!!.uid)
-        myRef.setValue(usuario)
-        Toast.makeText(this, "usuario creado con éxito!",
-            Toast.LENGTH_SHORT).show()
-        startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
+
     }
 
     private fun eventoIniciarSesion(){
