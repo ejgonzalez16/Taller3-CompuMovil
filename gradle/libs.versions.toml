@@ -11,11 +11,7 @@ material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
 osmdroidAndroid = "6.1.10"
-playServicesBase = "18.5.0"
-playServicesLocation = "21.3.0"
-playServicesLocationVersion = "18.0.0"
 playServicesMaps = "19.0.0"
-playServicesPhenotype = "17.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,11 +27,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
-play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-play-services-location-v1800 = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocationVersion" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
-play-services-phenotype = { group = "com.google.android.gms", name = "play-services-phenotype", version.ref = "playServicesPhenotype" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
