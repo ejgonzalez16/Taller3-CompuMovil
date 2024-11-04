@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Taller 3 SeekAndSolve"
+rootProject.name = "Taller 3 Seek And Solve"
 include(":app")
+ 

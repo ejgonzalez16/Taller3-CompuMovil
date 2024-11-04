@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primaryColor">#FFC83D</color> <!-- Amarillo (Sunglow) -->
+    <color name="tertiaryColor">#010400</color> <!-- Negro (Black) -->
+    <color name="secondaryColor">#3D73FF</color> <!-- Azul (Blue Crayola) -->
+    <color name="dangerColor">#DE3B40</color>
+    <color name="transparent">#00000000</color>  <!-- Transparente -->
+    <color name="buttonBlackColor">#805f09</color>
+    <color name="buttonGrayBackground">#9095A1</color>
+    <color name="changePicColor">#fff9eb</color>
+    <color name="changePicTextColor">#8c6400</color>
+    <color name="gray">#565D6D</color> <!-- Gris -->
+
+    <color name="blue">#459DE4</color>
+    <color name="red">#FF0000</color>
 </resources>
