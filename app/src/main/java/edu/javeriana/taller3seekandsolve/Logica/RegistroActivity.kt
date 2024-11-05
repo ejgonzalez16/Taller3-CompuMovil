@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_CAMERA
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.MY_PERMISSION_REQUEST_GALLERY
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS
+import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS_ACTIVOS
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
 import edu.javeriana.taller3seekandsolve.Datos.Usuario
 import edu.javeriana.taller3seekandsolve.databinding.ActivityRegistroBinding
@@ -218,6 +219,8 @@ class RegistroActivity : AppCompatActivity() {
                         this@RegistroActivity, "usuario creado con éxito!",
                         Toast.LENGTH_SHORT
                     ).show()
+                    myRef = database.getReference(PATH_USERS_ACTIVOS).child(auth.currentUser!!.uid)
+                    myRef.setValue(auth.currentUser!!.uid)
                     startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
                 }
 

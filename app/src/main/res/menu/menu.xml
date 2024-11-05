@@ -2,8 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menuLogOut"
+        android:icon="@drawable/baseline_density_small_24"
         android:title="@string/logout" />
     <item
-        android:id="@+id/menuSettings"
+        android:id="@+id/menuDisponibilidad"
+        android:icon="@drawable/baseline_density_small_24"
         android:title="@string/establecer_disponibilidad" />
 </menu>

@@ -9,11 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS_ACTIVOS
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
 import edu.javeriana.taller3seekandsolve.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private val database = FirebaseDatabase.getInstance()
+    private lateinit var myRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +49,12 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithEmail:success:")
-                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                    myRef = database.getReference(PATH_USERS_ACTIVOS).child(auth.currentUser!!.uid)
+                    myRef.setValue(auth.currentUser!!.uid)
+                    val intentMain = Intent(this, MainActivity::class.java)
+                    val usuario = auth.currentUser
+                    intentMain.putExtra("usuario", usuario)
+                    startActivity(intentMain)
                 } else {
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
                     Toast.makeText(this, "Authentication failed.",

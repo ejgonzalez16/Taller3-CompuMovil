@@ -8,5 +8,6 @@ class Data {
         const val MY_PERMISSION_REQUEST_GALLERY = 1
         lateinit var auth: FirebaseAuth
         const val PATH_USERS = "usuarios/"
+        const val PATH_USERS_ACTIVOS = "usuariosActivos/"
     }
 }

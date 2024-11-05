@@ -19,5 +19,5 @@
     <string name="tomar_foto">Tomar foto</string>
     <string name="registrarse">Registrarse</string>
     <string name="logout">Log Out</string>
-    <string name="establecer_disponibilidad">Establecerse disponible</string>
+    <string name="establecer_disponibilidad">Establecerse no disponible</string>
 </resources>

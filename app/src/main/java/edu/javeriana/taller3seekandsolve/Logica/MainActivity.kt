@@ -1,13 +1,27 @@
 package edu.javeriana.taller3seekandsolve.Logica
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS_ACTIVOS
+import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
+import edu.javeriana.taller3seekandsolve.R
 import edu.javeriana.taller3seekandsolve.databinding.ActivityMainBinding
 import org.json.JSONObject
 import org.osmdroid.config.Configuration
@@ -23,9 +37,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var puntosInteres: MutableList<GeoPoint>
+    private val database = FirebaseDatabase.getInstance()
+    private lateinit var myRef: DatabaseReference
+    private lateinit var usuario: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        usuario = intent.getParcelableExtra<FirebaseUser>("usuario")!!
         initializeMapView()
         initializeLocationClient()
         checkLocationPermission()
@@ -35,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeMapView() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         Configuration.getInstance().load(this, getPreferences(MODE_PRIVATE))
         mapView = binding.mapView
         mapView.setMultiTouchControls(true)
@@ -128,5 +147,60 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu) // Llama al método del super
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menuLogOut -> {
+                myRef = database.getReference(PATH_USERS_ACTIVOS).child(usuario.uid)
+                myRef.removeValue()
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                true
+            }
+            R.id.menuDisponibilidad -> {
+                buscarDisponible(usuario.uid) { disponible ->
+                    if (disponible) {
+                        myRef = database.getReference(PATH_USERS_ACTIVOS).child(usuario.uid)
+                        myRef.removeValue()
+                        item.title = "Establecerse disponible"
+                    } else {
+                        myRef = database.getReference(PATH_USERS_ACTIVOS).child(usuario.uid)
+                        myRef.setValue(usuario.uid)
+                        item.title = "Establecerse no disponible"
+                    }
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun buscarDisponible(uid: String, onResult: (Boolean) -> Unit){
+        val myRef = database.getReference(PATH_USERS_ACTIVOS)
+        myRef.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Verifica si el UID existe
+                if (snapshot.exists()) {
+                    onResult(true) // UID encontrado
+                } else {
+                    onResult(false) // UID no encontrado
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Manejo de error si la operación fue cancelada
+                Log.e("Firebase", "Error al verificar el UID", error.toException())
+                onResult(false) // Retorna false en caso de error
+            }
+        })
     }
 }
