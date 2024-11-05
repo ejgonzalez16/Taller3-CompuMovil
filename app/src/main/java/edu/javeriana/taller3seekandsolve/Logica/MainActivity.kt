@@ -8,12 +8,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private val database = FirebaseDatabase.getInstance()
     private lateinit var myRef: DatabaseReference
     private lateinit var usuario: FirebaseUser
+    private var previousSize: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,58 @@ class MainActivity : AppCompatActivity() {
         initializeLocationClient()
         checkLocationPermission()
         loadPointsOfInterest()
+        servicioDisponibilidad()
+    }
+
+    private fun servicioDisponibilidad() {
+        myRef = database.getReference(PATH_USERS_ACTIVOS)
+        myRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                val userId = dataSnapshot.key
+                userId?.let {
+                    mostrarDisponibilidad(it)
+                }
+            }
+
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                val userId = dataSnapshot.key
+                userId?.let {
+                    mostrarDisponibilidad(it, isUserLeaving = true)
+                }
+            }
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
+    }
+
+    private fun mostrarDisponibilidad(userId: String, isUserLeaving: Boolean = false) {
+        val userDatabase = FirebaseDatabase.getInstance().getReference("usuarios/$userId")
+
+        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val nombre = dataSnapshot.child("nombre").getValue(String::class.java)
+                val apellido = dataSnapshot.child("apellido").getValue(String::class.java)
+
+                if (nombre != null && apellido != null) {
+                    val message = if (isUserLeaving) {
+                        "$nombre $apellido ha salido."
+                    } else {
+                        "$nombre $apellido ha llegado."
+                    }
+                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(applicationContext, "Usuario no encontrado.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(applicationContext, "Error: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun initializeMapView() {
