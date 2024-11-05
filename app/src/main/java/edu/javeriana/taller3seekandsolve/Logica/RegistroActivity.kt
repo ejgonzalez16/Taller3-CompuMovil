@@ -9,14 +9,11 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.text.InputType
 import android.util.Log
@@ -25,7 +22,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.firebase.database.DatabaseReference
@@ -193,43 +189,28 @@ class RegistroActivity : AppCompatActivity() {
         }
     }
 
-    private fun escribirUsuarioBD(urlImagen: String){
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, object :
-                LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    val latitud = location.latitude
-                    val longitud = location.longitude
-                    val usuario = Usuario(
-                        binding.nombreEditText.text.toString(),
-                        binding.apellidoEditText.text.toString(),
-                        binding.emailEditText.text.toString(),
-                        binding.contrasenia.text.toString(),
-                        urlImagen,
-                        binding.numeroIdentificacionEditText.text.toString().toInt(),
-                        latitud,
-                        longitud
-                    )
-                    myRef = database.getReference(PATH_USERS + auth.currentUser!!.uid)
-                    myRef.setValue(usuario)
-                    locationManager.removeUpdates(this)
-                    Toast.makeText(
-                        this@RegistroActivity, "usuario creado con éxito!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    myRef = database.getReference(PATH_USERS_ACTIVOS).child(auth.currentUser!!.uid)
-                    myRef.setValue(auth.currentUser!!.uid)
-                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
-                }
-
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-                override fun onProviderEnabled(provider: String) {}
-                override fun onProviderDisabled(provider: String) {}
-            })
-        }
-
+    private fun escribirUsuarioBD(urlImagen: String) {
+        val latitud = 0.0
+        val longitud = 0.0
+        val usuario = Usuario(
+            binding.nombreEditText.text.toString(),
+            binding.apellidoEditText.text.toString(),
+            binding.emailEditText.text.toString(),
+            binding.contrasenia.text.toString(),
+            urlImagen,
+            binding.numeroIdentificacionEditText.text.toString().toInt(),
+            latitud,
+            longitud
+        )
+        myRef = database.getReference(PATH_USERS + auth.currentUser!!.uid)
+        myRef.setValue(usuario)
+        Toast.makeText(
+            this@RegistroActivity, "usuario creado con éxito!",
+            Toast.LENGTH_SHORT
+        ).show()
+        myRef = database.getReference(PATH_USERS_ACTIVOS).child(auth.currentUser!!.uid)
+        myRef.setValue(auth.currentUser!!.uid)
+        startActivity(Intent(this@RegistroActivity, MainActivity::class.java))
     }
 
     private fun eventoIniciarSesion(){
