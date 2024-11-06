@@ -22,8 +22,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -34,6 +37,7 @@ import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.PATH_USERS_ACTIVOS
 import edu.javeriana.taller3seekandsolve.Datos.Data.Companion.auth
 import edu.javeriana.taller3seekandsolve.Datos.Usuario
 import edu.javeriana.taller3seekandsolve.databinding.ActivityRegistroBinding
+import org.osmdroid.util.GeoPoint
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -49,6 +53,10 @@ class RegistroActivity : AppCompatActivity() {
     private val database = FirebaseDatabase.getInstance()
     private lateinit var myRef: DatabaseReference
     private lateinit var locationManager: LocationManager
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var latitud: Double = 0.0
+    private var longitud: Double = 0.0
+    private var urlImagen: String = ""
 
     // El onRequestPermissionsResult se reemplaza por ActivityResultContracts.RequestMultiplePermissions
     // Porque se tienen que solicitar y aceptar varios permisos a la vez
@@ -71,6 +79,10 @@ class RegistroActivity : AppCompatActivity() {
         setContentView(binding.root)
         storage = FirebaseStorage.getInstance()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        // Pedir la localización actual
+        initializeLocationClient()
+        checkLocationPermission()
+        // -------------------------
         setupPasswordVisibility()
         eventoRegistrarse()
         eventoImagenContacto()
@@ -165,9 +177,9 @@ class RegistroActivity : AppCompatActivity() {
                 .addOnSuccessListener { taskSnapshot ->
                     // Obtener la URL de descarga después de que la imagen se suba con éxito
                     imageRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
+                        urlImagen = uri.toString()
                         // Guardar el URL en la base de datos o usarlo como desees
-                        escribirUsuarioBD(downloadUrl)
+                        escribirUsuarioBD()
                     }.addOnFailureListener { exception ->
                         Toast.makeText(
                             this@RegistroActivity,
@@ -189,9 +201,31 @@ class RegistroActivity : AppCompatActivity() {
         }
     }
 
-    private fun escribirUsuarioBD(urlImagen: String) {
-        val latitud = 0.0
-        val longitud = 0.0
+    private fun initializeLocationClient() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
+
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        } else {
+            obtenerLocalizacionActual()
+        }
+    }
+
+    private fun obtenerLocalizacionActual() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    latitud = it.latitude
+                    longitud = it.longitude
+//                    escribirUsuarioBD()
+                }
+            }
+        }
+    }
+
+    private fun escribirUsuarioBD() {
         val usuario = Usuario(
             binding.nombreEditText.text.toString(),
             binding.apellidoEditText.text.toString(),
@@ -202,7 +236,7 @@ class RegistroActivity : AppCompatActivity() {
             latitud,
             longitud
         )
-        myRef = database.getReference(PATH_USERS + auth.currentUser!!.uid)
+        myRef = database.getReference(PATH_USERS).child(auth.currentUser!!.uid)
         myRef.setValue(usuario)
         Toast.makeText(
             this@RegistroActivity, "usuario creado con éxito!",

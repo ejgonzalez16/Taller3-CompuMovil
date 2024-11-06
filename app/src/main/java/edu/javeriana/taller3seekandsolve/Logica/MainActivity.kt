@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        usuario = intent.getParcelableExtra<FirebaseUser>("usuario")!!
+        usuario = auth.currentUser!!
         initializeMapView()
         initializeLocationClient()
         checkLocationPermission()
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(applicationContext, "Error: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(applicationContext, "Error: ${databaseError.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
