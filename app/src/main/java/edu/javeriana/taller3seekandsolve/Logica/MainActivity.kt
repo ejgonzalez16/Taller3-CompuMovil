@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(applicationContext, "Usuario no encontrado.", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "Usuario no encontrado.", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -233,6 +233,11 @@ class MainActivity : AppCompatActivity() {
                         item.title = "Establecerse no disponible"
                     }
                 }
+                true
+            }
+            R.id.menuVerUsuarios -> {
+                val intent = Intent(this, UsuariosDisponiblesActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

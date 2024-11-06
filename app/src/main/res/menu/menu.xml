@@ -8,4 +8,8 @@
         android:id="@+id/menuDisponibilidad"
         android:icon="@drawable/baseline_density_small_24"
         android:title="@string/establecer_disponibilidad" />
+    <item
+        android:id="@+id/menuVerUsuarios"
+        android:icon="@drawable/baseline_density_small_24"
+        android:title="@string/opcion3_menu" />
 </menu>

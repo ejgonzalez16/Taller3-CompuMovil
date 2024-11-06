@@ -20,4 +20,6 @@
     <string name="registrarse">Registrarse</string>
     <string name="logout">Log Out</string>
     <string name="establecer_disponibilidad">Establecerse no disponible</string>
+    <string name="opcion3_menu">Ver usuarios disponibles</string>
+    <string name="ver_posicion">Ver posición</string>
 </resources>
